@@ -100,6 +100,32 @@ app.get("/verify/:token", (req, res) => {
 });
 
 // GET /demo/agents
+// POST /demo/register — used by the demo page
+app.post("/demo/register", (req, res) => {
+  const name = (req.body && req.body.name) || "DemoBot";
+  const agentId = "agent:" + Math.random().toString(16).slice(2, 10);
+  res.json({
+    agent_id: agentId,
+    name,
+    issuer: req.body?.issuer || "humansandrobots.ai",
+    scopes: req.body?.scopes || ["read:accounts", "send:messages"],
+    trust_level: "domain_verified",
+    status: "active",
+    registered_at: new Date().toISOString(),
+    token: FAKE_JWT,
+  });
+});
+
+// POST /demo/revoke/:id — used by the demo page
+app.post("/demo/revoke/:id", (req, res) => {
+  res.json({
+    revoked: true,
+    agent_id: req.params.id,
+    revoked_at: new Date().toISOString(),
+    reason: (req.body && req.body.reason) || "Demo revocation",
+  });
+});
+
 app.get("/demo/agents", (req, res) => res.json({ agents: AGENTS }));
 
 // GET /demo/verifications
